@@ -18,6 +18,7 @@ model User {
 
 model Task {
   id        String   @id @default(uuid())
+  task      String
   status    String   @default("pendente")
   user      User     @relation(fields: [userId], references: [id])
   userId    String
