@@ -6,8 +6,6 @@ export default class UserModel implements IUserModel {
     const user = await prismaClient.user.findUnique({
       where: { email },
     });
-    console.log("findUnique >>>>>", user);
-    
     return user ? user.id : null;
   }
 
@@ -15,7 +13,6 @@ export default class UserModel implements IUserModel {
     const user = await prismaClient.user.create({
       data: { email },
     });
-    console.log("create >>>>>", user);
     return user.id;
   }
 
