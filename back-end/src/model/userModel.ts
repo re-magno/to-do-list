@@ -1,4 +1,4 @@
-import { IUserModel } from './interfaces';
+import { IUserModel } from '../interfaces/loginInterface';
 import prismaClient from './prisma/prismaClient';
 
 export default class UserModel implements IUserModel {
