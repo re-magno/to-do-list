@@ -9,9 +9,12 @@ chai.use(chaiHttp);
 
 const { expect } = chai;
 
-const CORRECT_BODY = { email: 'tests@test.com'};
-const INCORRECT_BODY = { email: 'tests@test'};
-const UNAUTHORIZED = { "message": "Invalid email" };
+const VALID_EMAIL = { email: 'tests@test.com'};
+const INVALID_EMAIL = { email: 'tests@test'};
+const EMPTY_EMAIL = { email: ''};
+const MESSAGE_INVALID_EMAIL = { message: '\"email\" must be a valid email' };
+const MESSAGE_EMPTY_EMAIL = { message: '\"email\" is not allowed to be empty' };
+const MESSAGE_EMAIL_REQUIRED = { message: "\"email\" is required" };
 const USER = 'fc260199-341d-48f2-9f86-865f4f928a43';
 
 describe('1 - When a POST request is sent to the "/login" endpoint', () => {
@@ -23,7 +26,7 @@ describe('1 - When a POST request is sent to the "/login" endpoint', () => {
 
       chaiHttpResponse = await chai.request(app)
         .post('/login')
-        .send(CORRECT_BODY);
+        .send(VALID_EMAIL);
     });
 
     after(()=>{
@@ -34,31 +37,75 @@ describe('1 - When a POST request is sent to the "/login" endpoint', () => {
       expect(chaiHttpResponse).to.have.status(200);
     });
 
-    it('It should respond with the body containing the "user" and "token" propertiess', () => {
+    it('It should respond with the body containing the "user" and "token" properties', () => {
       expect(chaiHttpResponse.body).to.have.property('user');
       expect(chaiHttpResponse.body).to.have.property('token');
     });
   });
 
-  describe('1.2 -  When an incorrect "email" is sent', () => {
+  describe('1.2 - When an invalid "email" is sent', () => {
     before(async () => {
       sinon.stub(UserModel.prototype, 'findOrCreate').resolves(undefined);
 
       chaiHttpResponse = await chai.request(app)
         .post('/login')
-        .send(INCORRECT_BODY);
+        .send(INVALID_EMAIL);
       });
 
     after(()=>{
       (UserModel.prototype.findOrCreate as sinon.SinonStub).restore();
     });
 
-    it('It should return status 401 - UNAUTHORIZED', () => {
-      expect(chaiHttpResponse).to.have.status(401);
+    it('It should return status 400 - BAD REQUEST', () => {
+      expect(chaiHttpResponse).to.have.status(400);
     });
 
-    it('It should respond with an object containing the "message" property and the message "Invalid email"', () => {
-      expect(chaiHttpResponse.body).deep.equal(UNAUTHORIZED);
+    it('It should respond with an object containing the "message" property and the message "\"email\" must be a valid email"', () => {
+      expect(chaiHttpResponse.body).deep.equal(MESSAGE_INVALID_EMAIL);
     });
   });
+
+  describe('1.3 - When an empty "email" is sent', () => {
+    before(async () => {
+      sinon.stub(UserModel.prototype, 'findOrCreate').resolves(undefined);
+
+      chaiHttpResponse = await chai.request(app)
+        .post('/login')
+        .send(EMPTY_EMAIL);
+      });
+
+    after(()=>{
+      (UserModel.prototype.findOrCreate as sinon.SinonStub).restore();
+    });
+
+    it('It should return status 400 - BAD REQUEST', () => {
+      expect(chaiHttpResponse).to.have.status(400);
+    });
+
+    it('It should respond with an object containing the "message" property and the message "\"email\" is not allowed to be empty"', () => {
+      expect(chaiHttpResponse.body).deep.equal(MESSAGE_EMPTY_EMAIL);
+    });
+  });
+
+  describe('1.4 - When the "email" is not sent', () => {
+    before(async () => {
+      sinon.stub(UserModel.prototype, 'findOrCreate').resolves(undefined);
+
+      chaiHttpResponse = await chai.request(app)
+        .post('/login');
+      });
+
+    after(()=>{
+      (UserModel.prototype.findOrCreate as sinon.SinonStub).restore();
+    });
+
+    it('It should return status 400 - BAD REQUEST', () => {
+      expect(chaiHttpResponse).to.have.status(400);
+    });
+
+    it('It should respond with an object containing the "message" property and the message "\"email\" is required"', () => {
+      expect(chaiHttpResponse.body).deep.equal(MESSAGE_EMAIL_REQUIRED);
+    });
+  })
+  
 })
