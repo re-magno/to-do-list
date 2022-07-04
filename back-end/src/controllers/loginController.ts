@@ -14,8 +14,7 @@ export default class LoginController implements ILoginController {
       const login = await this._loginSevice.login(email);
       return res.status(200).json(login);
     } catch (error) {
-      console.log(error);
-      
+      next(error);
     }
   }
 }
