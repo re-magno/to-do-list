@@ -1,5 +1,5 @@
 import Jwt from "../utils/auth/jwt";
-import IUserModel from "../model/interfaces/userModel";
+import { IUserModel } from "../model/interfaces";
 import { LoginType } from "./@types/loginType";
 import ILoginService from "./interfaces/loginService";
 
