@@ -1,7 +1,6 @@
 import Jwt from "../utils/auth/jwt";
-import { IUserModel } from "../model/interfaces";
-import { LoginType } from "./@types/loginType";
-import ILoginService from "./interfaces/loginService";
+import { LoginType } from "../@types/loginType";
+import { ILoginService, IUserModel } from "../interfaces/loginInterface";
 
 export default class LoginService implements ILoginService {
   private _userModel : IUserModel;
