@@ -1,5 +1,4 @@
 import * as jwt from 'jsonwebtoken';
-import { readFileSync } from 'fs';
 import { SignOptions } from 'jsonwebtoken';
 import * as dotenv from 'dotenv';
 
@@ -17,9 +16,9 @@ export default class Jwt {
     return token;
   };
 
-  static validate = (payload: string): string | jwt.JwtPayload => {
-    const secret = readFileSync('jwt.evaluation.key', 'utf8');
+  static validate = (payload: string): jwt.JwtPayload => {
+    const secret = process.env.SECRET || 'secretJWT';
     const data = jwt.verify(payload, secret);
-    return data;
+    return data as jwt.JwtPayload;
   };
 }
