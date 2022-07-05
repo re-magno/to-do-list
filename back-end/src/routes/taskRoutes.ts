@@ -12,6 +12,10 @@ const taskController = new TaskController(taskService);
 
 
 taskRoutes.route('/')
-  .post(Middlewares.tokenValidation, (req, res, next) => taskController.create(req, res, next));
+  .post(
+    Middlewares.createTaskValidation,
+    Middlewares.tokenValidation,
+    (req, res, next) => taskController.create(req, res, next)
+  );
 
 export default taskRoutes;

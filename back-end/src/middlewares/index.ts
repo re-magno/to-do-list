@@ -2,10 +2,8 @@ import { ErrorRequestHandler, RequestHandler } from 'express';
 import HttpError from '../utils/errors/HttpError';
 import joi from 'joi';
 import { BadRequest } from '../utils/errors';
-import { ILogin } from '../interfaces/loginInterface';
 import { Unauthorized } from '../utils/errors/Unauthorized';
 import Jwt from '../utils/auth/jwt';
-import { JsonWebTokenError } from 'jsonwebtoken';
 
 export default class Middlewares {
   public static error: ErrorRequestHandler = (err, _req, res, _next) => {
@@ -21,13 +19,24 @@ export default class Middlewares {
     email: joi.string().email().required(),
   });
 
+  private static _createTaskSchema = joi.object({
+    task: joi.string().min(3).required(),
+  });
+
   public static loginValidation: RequestHandler = (req, _res, next) => {
-    const { email } = req.body as ILogin;
-    const { error } = Middlewares._loginSchema.validate({ email });
+    // const { email } = req.body as ILogin;
+    const { error } = Middlewares._loginSchema.validate(req.body);
 
     if(error) return next(new BadRequest(error.message));
     next();
   };
+
+  public static createTaskValidation: RequestHandler = (req, _res, next) => {
+    const { error } = Middlewares._createTaskSchema.validate(req.body);
+
+    if(error) return next(new BadRequest(error.message));
+    next();
+  }
 
   public static tokenValidation: RequestHandler = (req, _res, next) => {
     const { authorization } = req.headers;
